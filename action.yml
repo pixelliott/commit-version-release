@@ -29,14 +29,8 @@ runs:
       with:
         fetch-depth: 0
 
-    - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
-      shell: bash
-
-    - run: echo "${{ github.action_path }}"
+    - run: cd ${{ github.action_path }} && ls
       shell: pwsh
 
-    - run: ls
-      shell: pwsh
-
-    - run: dotnet run --project ./CommitVersionRelease/CommitVersionRelease.csproj -j ${{ inputs.package-json-path }} -r ${{ inputs.repo }} -c ${{ inputs.commit-reference }} -t ${{ inputs.github-token }}
+    - run: dotnet run --project ${{ github.action_path }}\CommitVersionRelease\CommitVersionRelease.csproj -j ${{ inputs.package-json-path }} -r ${{ inputs.repo }} -c ${{ inputs.commit-reference }} -t ${{ inputs.github-token }}
       shell: pwsh 
