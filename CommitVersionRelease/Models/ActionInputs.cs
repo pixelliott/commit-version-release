@@ -2,7 +2,7 @@
 
 public class ActionInputs
 {
-    [Option('p', "package-json-path", Required = true, HelpText = "The package.json path. e.g. `package.json`.")]
+    [Option('j', "package-json-path", Required = true, HelpText = "The package.json path. e.g. `package.json`.")]
     public string PackageJsonPath { get; set; }
 
     [Option('r', "repo", Required = true, HelpText = "The repository name in the format owner/repo. Assign from `github.repository`.")]
