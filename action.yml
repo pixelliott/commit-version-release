@@ -32,5 +32,5 @@ runs:
     - run: cd ${{ github.action_path }} && ls
       shell: pwsh
 
-    - run: dotnet run --project ${{ github.action_path }}\CommitVersionRelease\CommitVersionRelease.csproj -j ${{ inputs.package-json-path }} -e ${{ inputs.repo }} -r ${{ inputs.commit-reference }} -t ${{ inputs.github-token }}
+    - run: dotnet run --project ${{ github.action_path }}\CommitVersionRelease\CommitVersionRelease.csproj -j ${{ inputs.package-json-path }} -u ${{ inputs.repo }} -e ${{ inputs.commit-reference }} -g ${{ inputs.github-token }}
       shell: pwsh 
