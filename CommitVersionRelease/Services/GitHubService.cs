@@ -50,6 +50,10 @@ public sealed class GitHubService
 
             return release?.Id;
         }
+        else
+        {
+            Console.WriteLine("Error" + await httpResponse.Content.ReadAsStringAsync());
+        }
 
         return null;
     }
