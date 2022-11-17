@@ -22,17 +22,7 @@ outputs:
   summary-details:
     description: 'The description of the outcome'
 runs:
-  build:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        dotnet-version: [ '6.0.x' ]
-  args:
-  - '-p'
-  - ${{ inputs.package-json-path }}
-  - '-r'
-  - ${{ inputs.repo }}
-  - '-c'
-  - ${{ inputs.commit-reference }}
-  - '-t'
-  - ${{ inputs.github-token }}
+  using: "composite"
+  steps:
+    - run: dotnet run --project CommitVersionRelease\ -p ${{ inputs.package-json-path }} -r ${{ inputs.repo }} -c ${{ inputs.commit-reference }} -t ${{ inputs.github-token }}
+      shell: pwsh 
