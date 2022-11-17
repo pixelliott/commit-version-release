@@ -1,0 +1,38 @@
+name: 'commit version release'
+description: 'Automatically create a draft release when you commit'
+branding:
+  icon: sliders
+  color: blue
+inputs:
+  package-json-path:
+    description: 'The package.json path. e.g. `package.json`.'
+    required: true
+  repo:
+    description: 'The repository name in the format owner/repo. Assign from `github.repository`.'
+    required: true
+  commit-reference:
+    description: 'The reference to the commit. Assign from `github.event.head_commit.ref`'
+    required: true
+  github-token:
+    description: 'Github token. Assign from `github.token`.'
+    required: true
+outputs:
+  summary-title:
+    description: 'The title of the outcome'
+  summary-details:
+    description: 'The description of the outcome'
+runs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        dotnet-version: [ '6.0.x' ]
+  args:
+  - '-p'
+  - ${{ inputs.package-json-path }}
+  - '-r'
+  - ${{ inputs.repo }}
+  - '-c'
+  - ${{ inputs.commit-reference }}
+  - '-t'
+  - ${{ inputs.github-token }}
