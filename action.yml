@@ -24,5 +24,5 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: dotnet run --project CommitVersionRelease\ -j ${{ inputs.package-json-path }} -r ${{ inputs.repo }} -c ${{ inputs.commit-reference }} -t ${{ inputs.github-token }}
+    - run: dotnet run --project CommitVersionRelease\CommitVersionRelease.csproj -j ${{ inputs.package-json-path }} -r ${{ inputs.repo }} -c ${{ inputs.commit-reference }} -t ${{ inputs.github-token }}
       shell: pwsh 
