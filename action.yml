@@ -24,5 +24,8 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
     - run: dotnet run --project CommitVersionRelease\CommitVersionRelease.csproj -j ${{ inputs.package-json-path }} -r ${{ inputs.repo }} -c ${{ inputs.commit-reference }} -t ${{ inputs.github-token }}
       shell: pwsh 
