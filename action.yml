@@ -29,5 +29,5 @@ runs:
       with:
         fetch-depth: 0
 
-    - run: dotnet run --project ${{ github.action_path }}\CommitVersionRelease\CommitVersionRelease.csproj -j ${{ inputs.package-json-path }} -u ${{ inputs.repo }} -e ${{ inputs.commit-reference }} -g ${{ inputs.github-token }}
+    - run: dotnet run --project ${{ github.action_path }}/CommitVersionRelease/CommitVersionRelease.csproj -j ${{ inputs.package-json-path }} -u ${{ inputs.repo }} -e ${{ inputs.commit-reference }} -g ${{ inputs.github-token }}
       shell: bash 
