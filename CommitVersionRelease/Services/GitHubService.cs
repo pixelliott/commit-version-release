@@ -96,7 +96,7 @@ public sealed class GitHubService
 
         await GitHubHttpClient.PatchAsync($"repos/{this.ActionInputs.Repo}/releases/{releaseId}", new StringContent(JsonSerializer.Serialize(new GitHubReleaseCreateRequest
         {
-            Body = $"{release.Body}\n[{commit.Commit.Committer.Date:dd/MM/yyyy HH:mm}] {commit.Sha[..7]} {(commit.Commit.Message.Length > 64 ? commit.Commit.Message.Substring(0, 61) + "..." : commit.Commit.Message)}",
+            Body = $"{release.Body}\n[{commit.Commit.Committer.Date:dd/MM/yyyy HH:mm}] {commit.Sha[..7]}\n{(commit.Commit.Message.Length > 64 ? commit.Commit.Message.Substring(0, 61) + "..." : commit.Commit.Message)}",
             Draft = true,
             Name = release.Name,
             TagName = release.TagName,
