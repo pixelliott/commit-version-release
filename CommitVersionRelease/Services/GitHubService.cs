@@ -34,12 +34,14 @@ public sealed class GitHubService
 
     public async Task<long?> CreateDraftReleaseAsync(string version, string login)
     {
+        var tagName = "v" + version;
+
         var httpResponse = await GitHubHttpClient.PostAsync($"repos/{this.ActionInputs.Repo}/releases", new StringContent(JsonSerializer.Serialize(new GitHubReleaseCreateRequest
         {
             Draft = true,
-            TagName = "v" + version,
-            Name = "v" + version,
-            Body = $"Created at {DateTimeOffset.Now:dd/MM/yyyy HH:mm}\nContributors: @{login}\n\n## What's changed",
+            TagName = tagName,
+            Name = tagName,
+            Body = $"Created at {DateTimeOffset.Now:dd/MM/yyyy HH:mm}\nContributors: @{login}\n[View all changes](https://github.com/{this.ActionInputs.Repo}/compare/{tagName}...master)\n\n## What's changed",
         }, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull })));
 
         if (httpResponse.IsSuccessStatusCode)
