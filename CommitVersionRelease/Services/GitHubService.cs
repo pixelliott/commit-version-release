@@ -32,8 +32,9 @@ public sealed class GitHubService
         return null;
     }
 
-    public async Task<long?> CreateDraftReleaseAsync(string version, string login)
+    public async Task<long?> CreateDraftReleaseAsync(string oldVersion, string version, string login)
     {
+        var oldTagName = "v" + oldVersion;
         var tagName = "v" + version;
 
         var httpResponse = await GitHubHttpClient.PostAsync($"repos/{this.ActionInputs.Repo}/releases", new StringContent(JsonSerializer.Serialize(new GitHubReleaseCreateRequest
@@ -41,7 +42,7 @@ public sealed class GitHubService
             Draft = true,
             TagName = tagName,
             Name = tagName,
-            Body = $"Created at {DateTimeOffset.Now:dd/MM/yyyy HH:mm}\nContributors: @{login}\n[View all changes](https://github.com/{this.ActionInputs.Repo}/compare/{tagName}...master)\n\n## What's changed",
+            Body = $"Created at {DateTimeOffset.Now:dd/MM/yyyy HH:mm}\nContributors: @{login}\n[View all changes](https://github.com/{this.ActionInputs.Repo}/compare/{oldTagName}...master)\n\n## What's changed",
         }, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull })));
 
         if (httpResponse.IsSuccessStatusCode)
@@ -59,7 +60,6 @@ public sealed class GitHubService
 
         return null;
     }
-
     public async Task<GitHubRelease?> GetReleaseAsync(long releaseId)
     {
         var httpResponse = await GitHubHttpClient.GetAsync($"repos/{this.ActionInputs.Repo}/releases/{releaseId}");
@@ -67,6 +67,7 @@ public sealed class GitHubService
         if (httpResponse.IsSuccessStatusCode)
         {
             using var contentStream = await httpResponse.Content.ReadAsStreamAsync();
+
 
             var release = await JsonSerializer.DeserializeAsync<GitHubRelease>(contentStream);
 
