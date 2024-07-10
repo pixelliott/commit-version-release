@@ -131,7 +131,7 @@ public sealed class GitHubService
             Message = $"Updated package.json version to {packageJson["version"]}",
             Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(packageJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }))),
             Sha = content.Sha
-        }, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull })));
+        }, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping })));
 
         if (!httpResponse.IsSuccessStatusCode)
             Console.WriteLine("Could not increment package.json version");
