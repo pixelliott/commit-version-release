@@ -129,7 +129,7 @@ public sealed class GitHubService
         var httpResponse = await GitHubHttpClient.PutAsync($"repos/{this.ActionInputs.Repo}/contents/{this.ActionInputs.PackageJsonPath}", new StringContent(JsonSerializer.Serialize(new GitHubCommitCreateRequest
         {
             Message = $"Updated package.json version to {packageJson["version"]}",
-            Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(packageJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }))),
+            Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(packageJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }))),
             Sha = content.Sha
         }, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull })));
 
