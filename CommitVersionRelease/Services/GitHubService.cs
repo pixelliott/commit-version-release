@@ -32,14 +32,17 @@ public sealed class GitHubService
         return null;
     }
 
-    public async Task<long?> CreateDraftReleaseAsync(string version, string login)
+    public async Task<long?> CreateDraftReleaseAsync(string oldVersion, string version, string login)
     {
+        var oldTagName = "v" + oldVersion;
+        var tagName = "v" + version;
+
         var httpResponse = await GitHubHttpClient.PostAsync($"repos/{this.ActionInputs.Repo}/releases", new StringContent(JsonSerializer.Serialize(new GitHubReleaseCreateRequest
         {
             Draft = true,
-            TagName = "v" + version,
-            Name = "v" + version,
-            Body = $"Created at {DateTimeOffset.Now:dd/MM/yyyy HH:mm}\nContributors: @{login}\n\n## What's changed\n",
+            TagName = tagName,
+            Name = tagName,
+            Body = $"Created at {DateTimeOffset.Now:dd/MM/yyyy HH:mm}\nContributors: @{login}\n[View all changes](https://github.com/{this.ActionInputs.Repo}/compare/{oldTagName}...master)\n\n## What's changed",
         }, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull })));
 
         if (httpResponse.IsSuccessStatusCode)
@@ -57,7 +60,6 @@ public sealed class GitHubService
 
         return null;
     }
-
     public async Task<GitHubRelease?> GetReleaseAsync(long releaseId)
     {
         var httpResponse = await GitHubHttpClient.GetAsync($"repos/{this.ActionInputs.Repo}/releases/{releaseId}");
@@ -65,6 +67,7 @@ public sealed class GitHubService
         if (httpResponse.IsSuccessStatusCode)
         {
             using var contentStream = await httpResponse.Content.ReadAsStreamAsync();
+
 
             var release = await JsonSerializer.DeserializeAsync<GitHubRelease>(contentStream);
 
@@ -96,7 +99,7 @@ public sealed class GitHubService
 
         await GitHubHttpClient.PatchAsync($"repos/{this.ActionInputs.Repo}/releases/{releaseId}", new StringContent(JsonSerializer.Serialize(new GitHubReleaseCreateRequest
         {
-            Body = $"{release.Body}\n[{commit.Commit.Committer.Date:dd/MM/yyyy HH:mm}] {commit.Sha[..7]} {(commit.Commit.Message.Length > 64 ? commit.Commit.Message.Substring(0, 61) + "..." : commit.Commit.Message)}",
+            Body = $"{release.Body}\n\n[{commit.Commit.Committer.Date:dd/MM/yyyy HH:mm}] {commit.Sha[..7]}\n{(commit.Commit.Message.Length > 64 ? commit.Commit.Message.Substring(0, 61) + "..." : commit.Commit.Message)}",
             Draft = true,
             Name = release.Name,
             TagName = release.TagName,
@@ -113,7 +116,7 @@ public sealed class GitHubService
         {
             using var contentStream = await httpResponse.Content.ReadAsStreamAsync();
 
-            var content = await JsonSerializer.DeserializeAsync<GitHubContent>(contentStream);
+            var content = await JsonSerializer.DeserializeAsync<GitHubContent>(contentStream, new JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping });
 
             return content;
         }
@@ -126,7 +129,7 @@ public sealed class GitHubService
         var httpResponse = await GitHubHttpClient.PutAsync($"repos/{this.ActionInputs.Repo}/contents/{this.ActionInputs.PackageJsonPath}", new StringContent(JsonSerializer.Serialize(new GitHubCommitCreateRequest
         {
             Message = $"Updated package.json version to {packageJson["version"]}",
-            Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(packageJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }))),
+            Content = Convert.ToBase64String(Encoding.UTF8.GetBytes(packageJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }))),
             Sha = content.Sha
         }, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull })));
 

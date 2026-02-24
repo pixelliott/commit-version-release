@@ -54,11 +54,12 @@ static async Task StartAsync(ActionInputs inputs, GitHubService github)
 
         var packageJson = JsonNode.Parse(Encoding.UTF8.GetString(Convert.FromBase64String(content.Content)));
 
+        var oldVersion = packageJson["version"];
         var versionParts = packageJson["version"]?.ToString().Split('.');
 
         packageJson["version"] = string.Join('.', versionParts.Where(x => x != versionParts.Last()).Concat(new string[] { (int.Parse(versionParts.Last()) + 1).ToString() }));
 
-        draftReleaseId = await github.CreateDraftReleaseAsync(packageJson["version"]?.ToString(), commit.Author.Login) ?? throw new NullReferenceException("Could not find or create draft release");
+        draftReleaseId = await github.CreateDraftReleaseAsync(oldVersion.ToString(), packageJson["version"]?.ToString(), commit.Author.Login) ?? throw new NullReferenceException("Could not find or create draft release");
 
         if (packageJson != null)
             await github.UpdatePackageJson(content, packageJson);
